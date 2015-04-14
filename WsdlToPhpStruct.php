@@ -153,43 +153,53 @@ class WsdlToPhpStruct extends WsdlToPhpModel
                 array_push($bodyParams,$paramType . ' $_' . lcfirst($attribute->getCleanName()));
                 unset($paramType,$model);
             }
-            /**
-             * __contruct() method comments
-             */
-            $comments = array();
-            array_push($comments,'Constructor method for ' . $this->getCleanName());
-            /**
-             * Uses the parent constructor method
-             */
-            if(WsdlToPhpGenerator::getOptionGenerateWsdlClassFile())
-                array_push($comments,'@see parent::__construct()');
-            foreach($bodyUses as $bodyUse)
-                array_push($comments,'@uses ' . $bodyUse);
-            foreach($bodyParams as $bodyParam)
-                array_push($comments,'@param ' . $bodyParam);
-            array_push($comments,'@return ' . $this->getPackagedName());
-            array_push($_body,array(
-                                    'comment'=>$comments));
-            /**
-             * __contruct() method body
-             */
-            array_push($_body,'public function __construct(' . implode(',',$bodyParameters) . ')');
-            array_push($_body,'{');
-            $model = self::getModelByName($this->getInheritance());
-            /**
-             * Uses the parent constructor method
-             */
-            if(WsdlToPhpGenerator::getOptionGenerateWsdlClassFile())
-                array_push($_body,(($model && $model->getIsStruct())?self::getGenericWsdlClassName():'parent') . '::__construct(array(' . implode(',',$constructParameters) . '),false);');
-            /**
-             * Uses its own setters
-             */
-            else
-            {
-                foreach($attributes as $attribute)
-                    array_push($_body,'$this->' . $attribute->getSetterName() . '($_' . lcfirst($attribute->getCleanName()) . ');');
+
+            if(WsdlToPhpGenerator::getOptionAddConstructor()) {
+                /**
+                 * __contruct() method comments
+                 */
+                $comments = array();
+                array_push($comments, 'Constructor method for ' . $this->getCleanName());
+                /**
+                 * Uses the parent constructor method
+                 */
+                if (WsdlToPhpGenerator::getOptionGenerateWsdlClassFile()) {
+                    array_push($comments, '@see parent::__construct()');
+                }
+                foreach ($bodyUses as $bodyUse) {
+                    array_push($comments, '@uses ' . $bodyUse);
+                }
+                foreach ($bodyParams as $bodyParam) {
+                    array_push($comments, '@param ' . $bodyParam);
+                }
+                array_push($comments, '@return ' . $this->getPackagedName());
+                array_push($_body, array(
+                    'comment' => $comments
+                ));
+                /**
+                 * __contruct() method body
+                 */
+                array_push($_body, 'public function __construct(' . implode(',', $bodyParameters) . ')');
+                array_push($_body, '{');
+                $model = self::getModelByName($this->getInheritance());
+                /**
+                 * Uses the parent constructor method
+                 */
+                if (WsdlToPhpGenerator::getOptionGenerateWsdlClassFile()) {
+                    array_push($_body,
+                        (($model && $model->getIsStruct()) ? self::getGenericWsdlClassName() : 'parent') . '::__construct(array(' . implode(',',
+                            $constructParameters) . '),false);');
+                } /**
+                 * Uses its own setters
+                 */
+                else {
+                    foreach ($attributes as $attribute) {
+                        array_push($_body,
+                            '$this->' . $attribute->getSetterName() . '($_' . lcfirst($attribute->getCleanName()) . ');');
+                    }
+                }
+                array_push($_body, '}');
             }
-            array_push($_body,'}');
             /**
              * Setters and getters
              */
@@ -369,7 +379,11 @@ class WsdlToPhpStruct extends WsdlToPhpModel
      */
     public function getContextualPart()
     {
-        return $this->getIsRestriction()?'Enum':'Struct';
+        if(WsdlToPhpGenerator::getOptionAddContextToClassName()) {
+            return $this->getIsRestriction()?'Enum':'Struct';
+        } else {
+            return '';
+        }
     }
     /**
      * Returns the sub package name which the model belongs to

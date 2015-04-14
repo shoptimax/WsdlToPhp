@@ -516,6 +516,15 @@ class WsdlToPhpGenerator extends SoapClient
      * @var bool
      */
     private static $optionDebug;
+
+    /**
+     * Add a contextual string like 'Enum' or 'Struct' to the class name
+     * @var bool
+     */
+    private static $optionAddContextToClassName;
+
+    private static $optionAddConstructor = true;
+
     /**
      * Use intern global variable instead of using the PHP $GLOBALS variable
      * @var array
@@ -621,6 +630,7 @@ class WsdlToPhpGenerator extends SoapClient
         self::setOptionGenericConstantsNames(array_key_exists(self::OPT_GENERIC_CONSTANTS_NAMES_KEY,$_options)?$_options[self::OPT_GENERIC_CONSTANTS_NAMES_KEY]:false);
         self::setOptionInheritsClassIdentifier(array_key_exists(self::OPT_INHERITS_FROM_IDENTIFIER_KEY,$_options)?$_options[self::OPT_INHERITS_FROM_IDENTIFIER_KEY]:'');
         self::setOptionSendParametersAsArray(array_key_exists(self::OPT_SEND_PARAMETERS_AS_ARRAY_KEY,$_options)?$_options[self::OPT_SEND_PARAMETERS_AS_ARRAY_KEY]:false);
+        self::setOptionAddContextToClassName(false);
     }
     /**
      * Generates all classes based on options
@@ -1981,6 +1991,27 @@ class WsdlToPhpGenerator extends SoapClient
     {
         return (self::$optionDebug = $_optionDebug);
     }
+
+    public static function setOptionAddContextToClassName($option = false)
+    {
+        self::$optionAddContextToClassName = $option;
+    }
+
+    public static function getOptionAddContextToClassName()
+    {
+        return self::$optionAddContextToClassName;
+    }
+
+    public static function setOptionAddConstructor($option = true)
+    {
+        self::$optionAddConstructor = $option;
+    }
+
+    public static function getOptionAddConstructor()
+    {
+        return self::$optionAddConstructor;
+    }
+
     /**
      * Gets the package name
      * @param bool $_ucFirst ucfirst package name or not

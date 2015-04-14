@@ -89,7 +89,7 @@ class WsdlToPhpStructAttribute extends WsdlToPhpModel
      */
     public function getDeclaration()
     {
-        return 'public $' . $this->getCleanName() . ';';
+        return 'public $' . $this->getCleanName() . ' = null;';
     }
     /**
      * Returns the getter name for this attribute
